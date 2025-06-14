@@ -23,7 +23,7 @@
     {
       "id": 2,
       "name": "Gizmo Lite",
-      "price": 49.99,
+      "price": 49.99e-2,
       "available": false,
       "tags": ["basic", "sale"],
       "details": {
