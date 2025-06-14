@@ -1,0 +1,57 @@
+{
+  "metadata": {
+    "timestamp": "2025-06-14T18:19:18Z",
+    "version": 1.1,
+    "isValid": true,
+    "author": "AI Assistant"
+  },
+  "products": [
+    {
+      "id": 1,
+      "name": "Widget Pro",
+      "price": 129,
+      "available": true,
+      "tags": ["electronics", "smart", "new"],
+      "details": {
+        "weight": 1.35,
+        "dimensions": "10x5x2.5cm",
+        "description": "An advanced widget for all your needs.\\nFeatures include a \\\"quick-start\\\" guide.",
+        "country_of_origin": "JP\\u0009A"
+      },
+      "reviews": []
+    },
+    {
+      "id": 2,
+      "name": "Gizmo Lite",
+      "price": 49.99,
+      "available": false,
+      "tags": ["basic", "sale"],
+      "details": {
+        "color": "blue",
+        "material": "plastic",
+        "warranty": null
+      },
+      "nested_data": {
+        "settings": {
+          "mode": "eco",
+          "sensors": [1, 2, 3]
+        },
+        "empty_object": {}
+      }
+    },
+    {
+      "id": 3,
+      "name": "Accessory",
+      "price": 10.0,
+      "available": true,
+      "notes": "Simple item.\\r\\nNo complex structure."
+    }
+  ],
+  "configuration": {
+    "debug_mode": false,
+    "log_level": "info",
+    "empty_array_example": [],
+    "empty_object_example": {}
+  },
+  "final_message": "Parsing complete!\\u2705"
+}
