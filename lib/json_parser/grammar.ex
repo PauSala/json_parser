@@ -114,12 +114,13 @@ defmodule JsonParser.Grammar do
       ])
 
     Combinators.map(
-      Combinators.sequence(
+      Combinators.sequence([
         Combinators.char(?\\),
-        Combinators.sequence(Combinators.char(?u), four_hex_digits_parser)
-      ),
+        Combinators.char(?u),
+        four_hex_digits_parser
+      ]),
       fn
-        [_, [_, nested_hex_digits_list]] ->
+        [_, _, nested_hex_digits_list] ->
           code_point = String.to_integer(Enum.join(List.flatten(nested_hex_digits_list)), 16)
 
           <<code_point::utf8>>
@@ -179,13 +180,7 @@ defmodule JsonParser.Grammar do
   end
 
   def any_string_content_char_parser() do
-    Combinators.choice(
-      simple_escape_parser(),
-      Combinators.choice(
-        unicode_escape_parser(),
-        string_char_parser()
-      )
-    )
+    Combinators.choice([simple_escape_parser(), unicode_escape_parser(), string_char_parser()])
   end
 
   def json_string_parser() do
