@@ -135,6 +135,11 @@ defmodule JsonParser.Combinators do
     end
   end
 
+  def between(left, parser, right) do
+    sequence([ignore(left), parser, ignore(right)])
+    |> map(fn [_, value, _] -> value end)
+  end
+
   def separated_by(element_parser, separator_parser) do
     separator_then_element_parser =
       sequence(separator_parser, element_parser)

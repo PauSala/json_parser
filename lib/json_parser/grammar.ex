@@ -212,11 +212,8 @@ defmodule JsonParser.Grammar do
             "true" ->
               true
 
-            "false" ->
-              false
-
             _ ->
-              raise "Internal error: boolean parser matched unexpected string: #{inspect(string_value)}"
+              false
           end
         end
       )
@@ -229,15 +226,7 @@ defmodule JsonParser.Grammar do
     p =
       Combinators.map(
         Combinators.string("null"),
-        fn string_value ->
-          case string_value do
-            "null" ->
-              nil
-
-            _ ->
-              raise "Internal error: null parser matched unexpected string: #{inspect(string_value)}"
-          end
-        end
+        fn _ -> nil end
       )
 
     Combinators.sequence(p, whitespace_parser())
@@ -263,36 +252,32 @@ defmodule JsonParser.Grammar do
   end
 
   def array_parser() do
-    list_of_values_content_parser =
-      Combinators.separated_by_zero_or_more(value_parser(), comma_separator_parser())
-
     lbracket_parser = Combinators.char(?[)
     rbracket_parser = Combinators.char(?])
+    comma = comma_separator_parser()
+    ws = whitespace_parser()
 
-    raw_array_sequence_parser =
-      Combinators.sequence([
-        lbracket_parser,
-        whitespace_parser(),
-        list_of_values_content_parser,
-        whitespace_parser(),
-        rbracket_parser
-      ])
+    elements_parser =
+      Combinators.separated_by_zero_or_more(value_parser(), comma)
 
-    array_value_parser =
-      Combinators.map(
-        raw_array_sequence_parser,
-        fn [_lbracket, _ws_after_lbracket, values_list, _ws_before_rbracket, _rbracket] ->
-          values_list
-        end
+    array_with_brackets =
+      Combinators.between(
+        Combinators.sequence([lbracket_parser, ws]) |> Combinators.ignore(),
+        elements_parser,
+        Combinators.sequence([ws, rbracket_parser]) |> Combinators.ignore()
       )
 
-    Combinators.sequence(array_value_parser, whitespace_parser())
-    |> Combinators.map(fn [array, _ws] -> array end)
+    Combinators.sequence(array_with_brackets, ws)
+    |> Combinators.map(fn [array, _] -> array end)
   end
 
   defp colon_separator_parser() do
-    Combinators.sequence([whitespace_parser(), Combinators.char(?:), whitespace_parser()])
-    |> Combinators.map(fn [_ws1, _colon, _ws2] -> nil end)
+    Combinators.sequence([
+      whitespace_parser() |> Combinators.ignore(),
+      Combinators.char(?:) |> Combinators.ignore(),
+      whitespace_parser() |> Combinators.ignore()
+    ])
+    |> Combinators.map(fn _ -> nil end)
   end
 
   defp key_value_pair_parser() do
@@ -308,33 +293,23 @@ defmodule JsonParser.Grammar do
   end
 
   def object_parser() do
-    lcurly_parser = Combinators.char(?{)
-    rcurly_parser = Combinators.char(?})
+    lcurly = Combinators.char(?{)
+    rcurly = Combinators.char(?})
+    ws = whitespace_parser()
+    comma = comma_separator_parser()
 
-    list_of_key_value_pairs_content_parser =
-      Combinators.separated_by_zero_or_more(
-        key_value_pair_parser(),
-        comma_separator_parser()
+    key_value_pairs =
+      Combinators.separated_by_zero_or_more(key_value_pair_parser(), comma)
+
+    object_content_parser =
+      Combinators.between(
+        Combinators.sequence([lcurly, ws]) |> Combinators.ignore(),
+        key_value_pairs,
+        Combinators.sequence([ws, rcurly]) |> Combinators.ignore()
       )
+      |> Combinators.map(&Map.new/1)
 
-    raw_object_sequence_parser =
-      Combinators.sequence([
-        lcurly_parser,
-        whitespace_parser(),
-        list_of_key_value_pairs_content_parser,
-        whitespace_parser(),
-        rcurly_parser
-      ])
-
-    object_value_parser =
-      Combinators.map(
-        raw_object_sequence_parser,
-        fn [_lcurly, _ws_after_lcurly, key_value_pairs_list, _ws_before_rcurly, _rcurly] ->
-          Map.new(key_value_pairs_list)
-        end
-      )
-
-    Combinators.sequence(object_value_parser, whitespace_parser())
-    |> Combinators.map(fn [object_map, _ws] -> object_map end)
+    Combinators.sequence(object_content_parser, ws)
+    |> Combinators.map(fn [obj, _] -> obj end)
   end
 end
