@@ -185,16 +185,16 @@ defmodule JsonParser.Grammar do
 
   def json_string_parser() do
     full_quoted_string_sequence =
-      Combinators.sequence([
-        Combinators.char(?\"),
+      Combinators.between(
+        Combinators.char(?\") |> Combinators.ignore(),
         Combinators.many(any_string_content_char_parser()),
-        Combinators.char(?\")
-      ])
+        Combinators.char(?\") |> Combinators.ignore()
+      )
 
     string_value_parser =
       Combinators.map(
         full_quoted_string_sequence,
-        fn [_opening_quote, content_chars_list, _closing_quote] ->
+        fn content_chars_list ->
           Enum.join(content_chars_list)
         end
       )
