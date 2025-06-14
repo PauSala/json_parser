@@ -85,13 +85,7 @@ defmodule JsonParser.Combinators do
           end
         end)
 
-      case reduction_result do
-        {:halt, {:ok, result, remaining}} ->
-          {:ok, result, remaining}
-
-        error_tuple ->
-          error_tuple
-      end
+      reduction_result
     end
   end
 
