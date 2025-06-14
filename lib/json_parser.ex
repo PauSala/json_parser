@@ -1,7 +1,7 @@
 defmodule JsonParser do
-  @moduledoc """
-  Documentation for `JsonParser`.
-  """
-  def parse(_input) do
+  alias JsonParser.Grammar
+
+  def parse(input) do
+    Grammar.object_parser().(input)
   end
 end
