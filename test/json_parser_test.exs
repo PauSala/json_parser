@@ -101,8 +101,6 @@ defmodule JsonParserTest do
     f = fixture_path("test_case.json")
     {:ok, content} = File.read(f)
     res = Grammar.object_parser().(content)
-    assert {:ok, result, ""} = res
-
-    IO.inspect(res)
+    assert {:ok, _, ""} = res
   end
 end
