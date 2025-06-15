@@ -81,13 +81,7 @@ defmodule JsonParser.Grammar do
   defp cr_code(), do: Combinators.char(?\r)
 
   defp one_whitespace_char_parser() do
-    Combinators.choice(
-      space_code(),
-      Combinators.choice(
-        tab_code(),
-        Combinators.choice(newline_code(), cr_code())
-      )
-    )
+    Combinators.choice([space_code(), tab_code(), newline_code(), cr_code()])
   end
 
   defp whitespace_parser() do
