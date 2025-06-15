@@ -114,8 +114,8 @@ defmodule JsonParser.Grammar do
         four_hex_digits_parser
       ]),
       fn
-        [_, _, nested_hex_digits_list] ->
-          code_point = String.to_integer(Enum.join(List.flatten(nested_hex_digits_list)), 16)
+        [_, _, hex_digits_list] ->
+          code_point = String.to_integer(Enum.join(List.flatten(hex_digits_list)), 16)
 
           <<code_point::utf8>>
 
